@@ -8,7 +8,7 @@ LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 
 def ocr(event, context):
     try:
-        imgpath = '/tmp/img.png'
+        imgpath = '/tmp/img.' + event['filename'].split('.')[1]
         outpath = '/tmp/out'
 
         b64 = event['data'].split('base64,')[1]

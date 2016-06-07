@@ -1,8 +1,10 @@
 var files = [];
 var processing = false;
+var requests = {}
 
 function lambda_post(data, callback) {
   var url = 'https://g5ni3sw220.execute-api.us-west-2.amazonaws.com/prod/OCR'
+  requests[data['filename'].split('.')[0]] = new Date().getTime();
 
   $.ajax({
     type: 'POST',
@@ -17,6 +19,13 @@ function lambda_post(data, callback) {
 }
 
 function success(ret) {
+  var name = ret['filename'].split('.')[0]
+  var time = new Date().getTime();
+  var elapsed =  time - requests[name];
+  delete requests[name];
+
+  console.log('request for ' + name + ' took ' + elapsed + ' ms')
+
   var txt = atob(ret['data']);
   var blob = new Blob([txt], {type:"text/plain;charset=utf-8"});
   download(blob, ret['filename']);
@@ -55,4 +64,5 @@ $(document).ready(function() {
     form.preventDefault();
     return false;
   });
+
 });
