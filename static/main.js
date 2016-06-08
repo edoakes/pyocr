@@ -1,6 +1,6 @@
 var files = [];
 var processing = false;
-var requests = {}
+var requests = {};
 
 function lambda_post(data, callback) {
   var url = 'https://g5ni3sw220.execute-api.us-west-2.amazonaws.com/prod/OCR'
@@ -24,7 +24,8 @@ function success(ret) {
   var elapsed =  time - requests[name];
   delete requests[name];
 
-  console.log('request for ' + name + ' took ' + elapsed + ' ms')
+  console.log('request for ' + name + ' took ' + (elapsed/1000) + 's')
+  console.log('ocr time for ' + name + ' was ' + ret['time'] + 's')
 
   var txt = atob(ret['data']);
   var blob = new Blob([txt], {type:"text/plain;charset=utf-8"});

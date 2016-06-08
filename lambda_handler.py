@@ -2,6 +2,7 @@ import os
 import subprocess
 import tempfile
 import base64
+import time
 
 SCRIPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tesseract-lambda')
 LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
@@ -25,7 +26,9 @@ def ocr(event, context):
         )
 
         try:
+            start = time.clock()
             output = subprocess.check_output(command, shell=True)
+            ocr_time = time.clock() - start
         except subprocess.CalledProcessError as ocrE:
             print ocrE.output
             raise ocrE
@@ -35,7 +38,7 @@ def ocr(event, context):
 
         ret_name = event['filename'].split('.')[0] + '.txt'
 
-        return {'data':ocr, 'filename':ret_name}
+        return {'data':ocr, 'filename':ret_name, 'time':ocr_time}
 
     except Exception as e:
         raise e
