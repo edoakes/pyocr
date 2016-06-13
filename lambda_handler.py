@@ -9,36 +9,39 @@ LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 
 def ocr(event, context):
     try:
-        imgpath = '/tmp/img.' + event['filename'].split('.')[1]
-        outpath = '/tmp/out'
+        #imgpath = '/tmp/img.' + event['filename'].split('.')[1]
+        #outpath = '/tmp/out'
+        with tempfile.NamedTemporaryFile() as temp:
 
-        b64 = event['data'].split('base64,')[1]
+            b64 = event['data'].split('base64,')[1]
 
-        with open(imgpath, 'w+') as imgfd:
-            imgfd.write(base64.b64decode(b64))
+            temp.write(base64.b64decode(b64))
+            temp.flush()
 
-        command = 'LD_LIBRARY_PATH={} TESSDATA_PREFIX={} {}/tesseract {} {}'.format(
-            LIB_DIR,
-            SCRIPT_DIR,
-            SCRIPT_DIR,
-            imgpath,
-            outpath,
-        )
+            command = 'LD_LIBRARY_PATH={} TESSDATA_PREFIX={} {}/tesseract {} {}'.format(
+                LIB_DIR,
+                SCRIPT_DIR,
+                SCRIPT_DIR,
+                temp.name,
+                temp.name,
+            )
 
-        try:
-            start = time.clock()
-            output = subprocess.check_output(command, shell=True)
-            ocr_time = time.clock() - start
-        except subprocess.CalledProcessError as ocrE:
-            print ocrE.output
-            raise ocrE
+            try:
+                start = time.clock()
+                output = subprocess.check_output(command, shell=True)
+                ocr_time = time.clock() - start
+            except subprocess.CalledProcessError as ocrE:
+                print ocrE.output
+                raise ocrE
 
-        with open(outpath+'.txt', 'r+') as outfd:
-            ocr = base64.b64encode(outfd.read())
+            with open(temp.name+'.txt', 'r+') as outfd:
+                ocr = base64.b64encode(outfd.read())
 
-        ret_name = event['filename'].split('.')[0] + '.txt'
+            os.remove(temp.name+'.txt')
 
-        return {'data':ocr, 'filename':ret_name, 'time':ocr_time}
+            ret_name = event['filename'].split('.')[0] + '.txt'
+
+            return {'data':ocr, 'filename':ret_name, 'time':ocr_time}
 
     except Exception as e:
         raise e
