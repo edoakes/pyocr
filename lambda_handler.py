@@ -3,14 +3,13 @@ import subprocess
 import tempfile
 import base64
 import time
+import sys
 
 SCRIPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tesseract-lambda')
 LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 
 def ocr(event, context):
     try:
-        #imgpath = '/tmp/img.' + event['filename'].split('.')[1]
-        #outpath = '/tmp/out'
         with tempfile.NamedTemporaryFile() as temp:
 
             b64 = event['data'].split('base64,')[1]
