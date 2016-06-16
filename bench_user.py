@@ -20,8 +20,8 @@ def rand_img():
 
 class User():
     def __init__(self, fbid, endtime):
-        self.url = 'http://107.170.74.208:32776/runLambda/drzikdozajdw'
-        #self.url = 'https://g5ni3sw220.execute-api.us-west-2.amazonaws.com/prod/OCR'
+        #self.url = 'http://107.170.74.208:32776/runLambda/drzikdozajdw'
+        self.url = 'https://g5ni3sw220.execute-api.us-west-2.amazonaws.com/prod/OCR'
         #self.url = conf()['url']
         self.endtime = endtime
         self.img = rand_img()
