@@ -5,13 +5,12 @@ LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 
 def ocr(event, context):
     with tempfile.NamedTemporaryFile() as temp:
-
+	convert_time = 'N/A'
         b64 = event['data'].split('base64,')[1]
 
         temp.write(base64.b64decode(b64))
         temp.flush()
 
-        start = time.clock()
 
         ocr_name = temp.name
         if event['filename'].split('.')[1] == 'pdf':
@@ -22,7 +21,9 @@ def ocr(event, context):
             )
             print cmd
             try:
+        	start = time.clock()
                 output = subprocess.check_output(cmd, shell=True)
+		convert_time = time.clock() - start
                 print output
             except subprocess.CalledProcessError as convertE:
                 print convertE.output
@@ -38,6 +39,7 @@ def ocr(event, context):
         )
 
         try:
+	    start = time.clock()
             output = subprocess.check_output(command, shell=True)
             ocr_time = time.clock() - start
         except subprocess.CalledProcessError as ocrE:
@@ -51,7 +53,7 @@ def ocr(event, context):
 
         ret_name = event['filename'].split('.')[0] + '.txt'
 
-        return {'data':ocr, 'filename':ret_name, 'time':ocr_time}
+        return {'data':ocr, 'filename':ret_name, 'ocr_time':ocr_time, 'convert_time':convert_time}
 
 def lambda_handler(event, context):
     fn = {
