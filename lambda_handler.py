@@ -5,13 +5,11 @@ LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 
 def ocr(event, context):
     with tempfile.NamedTemporaryFile() as temp:
-	convert_time = 'N/A'
-
         temp.write(base64.b64decode(event['data']))
         temp.flush()
 
-
         ocr_name = temp.name
+	convert_time = 0
         if event['filename'].split('.')[1] == 'pdf':
             ocr_name += '.tiff'
             cmd = 'gs -dNOPAUSE -r300x300 -sDEVICE=tiffg4 -dBATCH -sOutputFile={} {}'.format(
