@@ -6,24 +6,23 @@ LIB_DIR = os.path.join(SCRIPT_DIR, 'lib')
 def ocr(event, context):
     with tempfile.NamedTemporaryFile() as temp:
 	convert_time = 'N/A'
-        b64 = event['data'].split('base64,')[1]
 
-        temp.write(base64.b64decode(b64))
+        temp.write(base64.b64decode(event['data']))
         temp.flush()
 
 
         ocr_name = temp.name
         if event['filename'].split('.')[1] == 'pdf':
             ocr_name += '.tiff'
-            cmd = 'gs -dNOPAUSE -r720x720 -sDEVICE=tiffg4 -dBATCH -sOutputFile={} {}'.format(
+            cmd = 'gs -dNOPAUSE -r300x300 -sDEVICE=tiffg4 -dBATCH -sOutputFile={} {}'.format(
                 ocr_name,
                 temp.name
             )
             print cmd
             try:
-        	start = time.clock()
+        	start = time.time()
                 output = subprocess.check_output(cmd, shell=True)
-		convert_time = time.clock() - start
+		convert_time = time.time() - start
                 print output
             except subprocess.CalledProcessError as convertE:
                 print convertE.output
@@ -39,9 +38,9 @@ def ocr(event, context):
         )
 
         try:
-	    start = time.clock()
+	    start = time.time()
             output = subprocess.check_output(command, shell=True)
-            ocr_time = time.clock() - start
+            ocr_time = time.time() - start
         except subprocess.CalledProcessError as ocrE:
             print ocrE.output
             raise ocrE
