@@ -89,6 +89,9 @@ class User():
             else:    
                 data[key] = value
 
+        for file in files:
+            files[file].close()
+
         return self.post(data)
 
     def rand_op(self):
